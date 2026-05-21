@@ -17,7 +17,7 @@
 - **历史兼容** — 新 XML 协议和旧 DSML 工具调用历史都能被解析、清理和恢复
 
 <p align="center">
-  <img src="assets/yuansheng.png" width="300" alt="记忆管理侧边栏">
+  <img src="assets/yuansheng.jpg" width="300" alt="记忆管理侧边栏">
 </p>
 
 ### 记忆系统

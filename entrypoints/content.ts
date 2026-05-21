@@ -11,6 +11,15 @@ import type {
 } from '../core/types';
 import { TOOL_NAMES } from '../core/constants';
 import { stripToolCalls } from '../core/interceptor/tool-parser';
+import {
+  AUTOMATION_BRIDGE_TIMEOUT_MS,
+  AUTOMATION_WINDOW_RUN_REQUEST,
+  CONTENT_WINDOW_SOURCE,
+  createAutomationRunnerFailure,
+  isAutomationContentRunMessage,
+  isAutomationWindowRunResultMessage,
+} from '../core/automation/messages';
+import type { AutomationRunnerRequest, AutomationRunnerResult } from '../core/automation/types';
 
 const TOOL_BLOCK_ID = 'dpp-tool-block';
 const TOOL_BLOCK_STYLE_ID = 'dpp-tool-block-css';
@@ -101,15 +110,67 @@ export default defineContentScript({
       applyBackground(cfg);
     });
 
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+      if (isAutomationContentRunMessage(message)) {
+        forwardAutomationRunToMainWorld(message.payload)
+          .then(sendResponse)
+          .catch((err) => {
+            sendResponse(
+              createAutomationRunnerFailure(
+                message.payload,
+                'automation_content_bridge_failed',
+                err instanceof Error ? err.message : String(err),
+                'bridge',
+                true,
+              ),
+            );
+          });
+        return true;
+      }
+
       if (message.type === 'STATE_UPDATED') {
         syncToMainWorld(message.memories, message.skills, message.activePreset, message.modelType);
       } else if (message.type === 'BACKGROUND_UPDATED') {
         applyBackground(message.config as BackgroundConfig | null);
       }
+      return undefined;
     });
   },
 });
+
+function forwardAutomationRunToMainWorld(request: AutomationRunnerRequest): Promise<AutomationRunnerResult> {
+  return new Promise((resolve) => {
+    const id = request.runId;
+    const timeout = window.setTimeout(() => {
+      window.removeEventListener('message', handleResult);
+      resolve(
+        createAutomationRunnerFailure(
+          request,
+          'automation_bridge_timeout',
+          'Timed out waiting for the DeepSeek page runner.',
+          'bridge',
+          false,
+        ),
+      );
+    }, AUTOMATION_BRIDGE_TIMEOUT_MS);
+
+    const handleResult = (event: MessageEvent) => {
+      if (!isAutomationWindowRunResultMessage(event.data)) return;
+      if (event.data.id !== id) return;
+      window.clearTimeout(timeout);
+      window.removeEventListener('message', handleResult);
+      resolve(event.data.result);
+    };
+
+    window.addEventListener('message', handleResult);
+    window.postMessage({
+      source: CONTENT_WINDOW_SOURCE,
+      type: AUTOMATION_WINDOW_RUN_REQUEST,
+      id,
+      payload: request,
+    });
+  });
+}
 
 function runToolExecution(call: ToolCall): Promise<ToolCardResult> {
   const task = executeToolCall(call)

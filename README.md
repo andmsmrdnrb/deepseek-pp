@@ -1,8 +1,8 @@
 # DeepSeek++
 
-为 [DeepSeek](https://chat.deepseek.com) 网页版注入 **类原生工具调用**、**Agentic 记忆系统**、**Skill 技能系统** 和 **系统提示词预设** 的 Chrome 扩展。
+为 [DeepSeek](https://chat.deepseek.com) 网页版注入 **类原生工具调用**、**Agentic 记忆系统**、**Skill 技能系统**、**系统提示词预设** 和 **自动化任务** 的 Chrome 扩展。
 
-让 DeepSeek 像支持原生 tools 一样自动执行记忆保存、更新、删除等动作，拥有跨对话长期记忆，并通过 `/skill` 指令一键切换专家模式。
+让 DeepSeek 像支持原生 tools 一样自动执行记忆保存、更新、删除等动作，拥有跨对话长期记忆，并通过 `/skill` 指令一键切换专家模式；也可以像 Codex 自动化一样，把固定 prompt 放进独立会话里立即运行或按计划重复执行。
 
 ## 核心功能
 
@@ -51,6 +51,29 @@
 - **一键激活** — 同一时间只有一个预设处于激活状态，激活后自动生效
 - **首条注入** — 每次新对话的首条消息前自动注入激活预设的内容，后续消息不重复注入
 - **与技能/记忆共存** — 预设内容作为前缀注入，与 Skill 指令和记忆上下文叠加生效
+
+### 自动化任务
+
+- **像 Codex 自动化一样运行** — 在侧边栏「自动化」页创建任务，点击「立即运行」即可把 prompt 发送到 DeepSeek，也可以启用定时频率自动触发
+- **每个任务独立会话** — 首次运行会创建独立 DeepSeek 会话，后续运行保存并复用该任务自己的 `chat_session_id` 和最新父消息，适合连续追踪同一主题
+- **支持 cron / RRULE** — 支持手动、5 字段 cron（如 `0 9 * * *`）和简化 RRULE（如 `FREQ=HOURLY;INTERVAL=1`），最小间隔默认为 15 分钟
+- **可暂停、编辑和删除** — 任务卡片支持暂停/启用、编辑 prompt 与频率、删除任务，以及打开对应 DeepSeek 会话
+- **运行状态可追踪** — 展示下次运行、上次运行、会话 ID、最近状态和错误信息，失败时可直接在卡片中查看原因
+- **复用现有增强能力** — 自动化 prompt 仍会经过 DeepSeek++ 的预设、记忆、`/skill` 和工具调用链路，不需要单独维护第二套 prompt 逻辑
+- **DeepSeek 官方网页链路** — 在 DeepSeek 页面同源上下文调用 `/api/v0/chat_session/create`、`/api/v0/chat/completion` 和 `/api/v0/chat/history_messages`，并处理登录 token、PoW challenge、模型类型和父消息 ID 兼容
+
+<p align="center">
+  <img src="assets/screenshot-sidepanel-automation.svg" width="300" alt="自动化任务侧边栏">
+</p>
+
+#### 自动化运行说明
+
+- 自动化依赖 Chrome 扩展后台定时器；Chrome 关闭或休眠期间错过的触发会在下次唤醒时合并为一次执行，不会补跑多次
+- DeepSeek 网页需要保持已登录状态；任务执行时扩展会复用已有 DeepSeek 标签页，找不到时会打开 `https://chat.deepseek.com/`
+- cron/RRULE 的最小执行间隔为 15 分钟，避免页面接口、PoW 和账号风控被高频触发
+- 自动化 prompt 会走现有 DeepSeek++ 请求拦截链路，因此激活的系统预设、记忆注入、`/skill` 指令和工具调用能力仍然生效
+- 运行超时后不会自动重复发送同一条 prompt，避免 DeepSeek 页面仍在执行时产生重复消息
+- 从源码更新后需要在 Chrome 扩展管理页重新加载 `dist/chrome-mv3/`，再验证侧边栏「自动化」页
 
 ### 工作原理
 
@@ -114,13 +137,14 @@ core/
 ├── memory/               # 记忆系统（存储、评分筛选、prompt 注入）
 ├── skill/                # 技能系统（内置技能、解析器、注册表）
 ├── preset/               # 系统提示词预设（存储、激活管理）
+├── automation/           # 自动化任务（存储、调度、DeepSeek runner、桥接协议）
 └── ui/                   # 技能自动补全弹窗
 
 entrypoints/
 ├── background.ts         # Service Worker（消息路由、数据持久化）
 ├── content.ts            # Content Script（DOM 集成、工具执行、结果区块恢复）
 ├── main-world.content.ts # Main World 脚本（网络拦截、工具调用桥接）
-└── sidepanel/            # 侧边栏 React 应用（记忆/技能/设置页面）
+└── sidepanel/            # 侧边栏 React 应用（记忆/技能/预设/自动化/设置页面）
 ```
 
 ## 友情链接

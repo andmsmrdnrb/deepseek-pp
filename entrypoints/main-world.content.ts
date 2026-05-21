@@ -1,6 +1,14 @@
 import { installFetchHook, updateHookState } from '../core/interceptor/fetch-hook';
 import { initSkillPopup } from '../core/ui/skill-popup';
 import type { Memory, ModelType, Skill, SystemPromptPreset, ToolCall, ToolCallRestoreRecord } from '../core/types';
+import {
+  AUTOMATION_WINDOW_RUN_RESULT,
+  MAIN_WORLD_WINDOW_SOURCE,
+  createAutomationRunnerFailure,
+  isAutomationWindowRunRequestMessage,
+} from '../core/automation/messages';
+import { runDeepSeekAutomation } from '../core/automation/runner';
+import type { AutomationRunnerRequest, AutomationRunnerResult } from '../core/automation/types';
 
 export default defineContentScript({
   matches: ['*://chat.deepseek.com/*'],
@@ -61,6 +69,11 @@ export default defineContentScript({
     window.addEventListener('message', (event) => {
       if (event.data?.source !== 'deepseek-pp-content') return;
 
+      if (isAutomationWindowRunRequestMessage(event.data)) {
+        void handleAutomationRunRequest(event.data.id, event.data.payload);
+        return;
+      }
+
       switch (event.data.type) {
         case 'SYNC_STATE': {
           const { memories, skills, activePreset, modelType } = event.data as {
@@ -77,3 +90,26 @@ export default defineContentScript({
     });
   },
 });
+
+async function handleAutomationRunRequest(id: string, request: AutomationRunnerRequest) {
+  const result = await runAutomationInMainWorld(request).catch((err): AutomationRunnerResult =>
+    createAutomationRunnerFailure(
+      request,
+      'automation_main_world_failed',
+      err instanceof Error ? err.message : String(err),
+      'runner',
+      true,
+    ),
+  );
+
+  window.postMessage({
+    source: MAIN_WORLD_WINDOW_SOURCE,
+    type: AUTOMATION_WINDOW_RUN_RESULT,
+    id,
+    result,
+  });
+}
+
+async function runAutomationInMainWorld(request: AutomationRunnerRequest): Promise<AutomationRunnerResult> {
+  return runDeepSeekAutomation(request);
+}

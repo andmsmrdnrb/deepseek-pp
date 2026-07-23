@@ -1,4 +1,5 @@
 import { en } from './resources/en';
+import { es } from './resources/es';
 import { zhCN, type LocaleMessages } from './resources/zh-CN';
 import {
   DEFAULT_LOCALE,
@@ -41,6 +42,7 @@ export type LocaleArrayKey = ArrayLeafPaths<LocaleMessages>;
 export const localeResources: Record<SupportedLocale, LocaleMessages> = {
   'zh-CN': zhCN,
   en,
+  es,
 };
 
 export function isSupportedLocale(value: unknown): value is SupportedLocale {
@@ -129,6 +131,7 @@ function localeFromLanguageTag(language: string): SupportedLocale | null {
   const normalized = language.trim().replace(/_/g, '-').toLowerCase();
   if (!normalized) return null;
   if (normalized === 'en' || normalized.startsWith('en-')) return 'en';
+  if (normalized === 'es' || normalized.startsWith('es-')) return 'es';
   if (
     normalized === 'zh' ||
     normalized.startsWith('zh-') ||

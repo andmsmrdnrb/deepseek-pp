@@ -97,7 +97,9 @@ function renderForcedResponseLanguage(
   if (!forceResponseLanguage) return '';
   const language = forceResponseLanguage === 'en'
     ? translate(locale, 'prompt.responseLanguageEnglish')
-    : translate(locale, 'prompt.responseLanguageChinese');
+    : forceResponseLanguage === 'es'
+      ? translate(locale, 'prompt.responseLanguageSpanish')
+      : translate(locale, 'prompt.responseLanguageChinese');
   return translate(locale, 'prompt.forceResponseLanguage', { language });
 }
 

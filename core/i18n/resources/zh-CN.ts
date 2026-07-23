@@ -59,6 +59,7 @@ export const zhCN = {
     auto: '跟随浏览器',
     zhCN: '简体中文',
     en: 'English',
+    es: 'Español',
   },
   sidepanel: {
     libraryPage: {
@@ -364,6 +365,7 @@ export const zhCN = {
       languageAuto: '跟随',
       languageChinese: '简体中文',
       languageEnglish: 'English',
+      languageSpanish: '西班牙语',
       languageCurrent: '当前：{language}',
       apiKeyRequired: '请输入 DeepSeek API Key',
       saveFailed: '保存失败',
@@ -515,6 +517,7 @@ export const zhCN = {
       languageAuto: '自动',
       languageZh: '简体中文',
       languageEn: '英文',
+      languageEs: '西班牙语',
       backendUnavailable: '提示词设置后端不可用，请重新加载扩展后再试。',
       loadFailed: '读取提示词设置失败：{error}',
       saveFailed: '保存提示词设置失败：{error}',
@@ -1284,6 +1287,7 @@ export const zhCN = {
     standaloneMemories: '## 已有记忆\n{memories}',
     forceResponseLanguage: '## 回复语言\n请使用{language}回复。',
     responseLanguageChinese: '简体中文',
+    responseLanguageSpanish: '西班牙语',
     responseLanguageEnglish: '英文',
     skillUserInputWrapper: '{instructions}\n\n---\n\n以下是用户本次的输入，请根据上述指令处理：\n\n{userInput}',
     inlineAgent: {

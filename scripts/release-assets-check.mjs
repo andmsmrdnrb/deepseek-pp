@@ -52,6 +52,7 @@ for (const zip of extensionZips) {
   assertZipContains(zip.path, 'background.js', `${zip.browser} zip must contain background.js`);
   assertZipContains(zip.path, '_locales/en/messages.json', `${zip.browser} zip must contain English locale messages`);
   assertZipContains(zip.path, '_locales/zh_CN/messages.json', `${zip.browser} zip must contain Chinese locale messages`);
+  assertZipContains(zip.path, '_locales/es/messages.json', `${zip.browser} zip must contain Spanish locale messages`);
   inspectPyodidePackage(zip.browser, zip.path);
   inspectBundledSkillPackage(zip.browser, zip.path);
 }

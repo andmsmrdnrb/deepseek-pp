@@ -15,10 +15,12 @@ import { getPetLines } from '../core/pet/lines';
 describe('i18n resources', () => {
   it('keeps English and Chinese string keys in parity', () => {
     expect(getLocaleStringKeys('en').sort()).toEqual(getLocaleStringKeys('zh-CN').sort());
+    expect(getLocaleStringKeys('es').sort()).toEqual(getLocaleStringKeys('zh-CN').sort());
   });
 
   it('keeps English and Chinese array keys in parity', () => {
     expect(getLocaleArrayKeys('en').sort()).toEqual(getLocaleArrayKeys('zh-CN').sort());
+    expect(getLocaleArrayKeys('es').sort()).toEqual(getLocaleArrayKeys('zh-CN').sort());
   });
 });
 
@@ -26,6 +28,9 @@ describe('i18n translation', () => {
   it('translates typed keys by locale', () => {
     expect(translate('en', 'app.tabs.chat')).toBe('Chat');
     expect(translate('zh-CN', 'app.tabs.chat')).toBe('对话');
+    expect(translate('es', 'app.tabs.chat')).toBe('Chat');
+    expect(translate('es', 'app.tabs.library')).toBe('Biblioteca');
+    expect(translate('es', 'app.tabs.settings')).toBe('Ajustes');
   });
 
   it('translates sidepanel shared UI copy by locale', () => {
@@ -71,6 +76,22 @@ describe('i18n translation', () => {
     expect(getPetLines('success', 'zh-CN')).toContain('搞定！');
   });
 
+  it('keeps high-traffic Spanish UI surfaces localized instead of falling back to English copies', () => {
+    expect(translate('es', 'sidepanel.settings.title')).toBe('Ajustes');
+    expect(translate('es', 'sidepanel.memoryPage.emptyAll')).toBe('Aún no hay memorias. Se acumularán automáticamente durante las conversaciones.');
+    expect(translate('es', 'sidepanel.projectsPage.createProject')).toBe('Crear proyecto');
+    expect(translate('es', 'sidepanel.savedPage.insertPrompt')).toBe('Insertar en el chat');
+    expect(translate('es', 'sidepanel.skillPage.description')).toBe('Los Skills son flujos expertos reutilizables. Escribe un comando /skill para añadir reglas específicas de la tarea al chat actual.');
+    expect(translate('es', 'sidepanel.mcpPage.summary', {
+      servers: 2,
+      enabled: 1,
+      tools: 4,
+    })).toBe('2 servidores, activos: 1, herramientas automáticas: 4');
+    expect(translate('es', 'content.export.buttonIdle')).toBe('Exportar conversación actual');
+    expect(translate('es', 'background.contextMenus.sendToChat')).toBe('Enviar al chat');
+    expect(translateArray('es', 'pet.lines.success')).toEqual(['Listo', 'Gestionado', 'Finalizado']);
+  });
+
   it('interpolates message parameters without swallowing missing placeholders', () => {
     expect(formatMessage('Hello {name}, count {count}, flag {flag}', {
       name: 'DeepSeek++',
@@ -114,6 +135,7 @@ describe('i18n locale preference resolution', () => {
   it('normalizes invalid locale preferences to auto', () => {
     expect(normalizeLocalePreference('en')).toBe('en');
     expect(normalizeLocalePreference('zh-CN')).toBe('zh-CN');
+    expect(normalizeLocalePreference('es')).toBe('es');
     expect(normalizeLocalePreference('auto')).toBe('auto');
     expect(normalizeLocalePreference('fr-FR')).toBe('auto');
     expect(normalizeLocalePreference(null)).toBe('auto');
@@ -134,6 +156,12 @@ describe('i18n locale preference resolution', () => {
   });
 
   it('resolves auto from browser language candidates', () => {
+    expect(resolveLocalePreference('auto', ['es-MX', 'en-US'])).toMatchObject({
+      preference: 'auto',
+      locale: 'es',
+      fallback: false,
+    });
+
     expect(resolveLocalePreference('auto', ['fr-FR', 'en-US'])).toMatchObject({
       preference: 'auto',
       locale: 'en',

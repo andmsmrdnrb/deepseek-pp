@@ -8,6 +8,7 @@ const failures = [];
 const localePaths = {
   en: 'public/_locales/en/messages.json',
   zh_CN: 'public/_locales/zh_CN/messages.json',
+  es: 'public/_locales/es/messages.json',
 };
 const requiredKeys = [
   'extension_name',
@@ -92,6 +93,11 @@ assertIncludes(
   releaseAssetsCheck,
   "_locales/zh_CN/messages.json",
   'release asset check must require Chinese locale assets in packaged zips',
+);
+assertIncludes(
+  releaseAssetsCheck,
+  "_locales/es/messages.json",
+  'release asset check must require Spanish locale assets in packaged zips',
 );
 
 if (failures.length > 0) {

@@ -7,14 +7,16 @@ import type { SettingsState } from '../../controllers/useSettingsController';
 export default function GeneralSubPage({ state }: { state: SettingsState }) {
   const { t, locale, preference: localePreference, setPreference: setLocalePreference } = useI18n();
 
-  const currentLanguageLabel =
-    locale === 'en'
-      ? t('sidepanel.settings.languageEnglish')
+  const currentLanguageLabel = locale === 'en'
+    ? t('sidepanel.settings.languageEnglish')
+    : locale === 'es'
+      ? t('sidepanel.settings.languageSpanish')
       : t('sidepanel.settings.languageChinese');
   const languageOptions: Array<{ value: LocalePreference; label: string }> = [
     { value: 'auto', label: t('sidepanel.settings.languageAuto') },
     { value: 'zh-CN', label: t('sidepanel.settings.languageChinese') },
     { value: 'en', label: t('sidepanel.settings.languageEnglish') },
+    { value: 'es', label: t('sidepanel.settings.languageSpanish') },
   ];
   const modelOptions: Array<{ value: ModelType; label: string }> = [
     { value: null, label: t('sidepanel.settings.modelDefault') },
@@ -36,7 +38,7 @@ export default function GeneralSubPage({ state }: { state: SettingsState }) {
             {t('sidepanel.settings.languageCurrent', { language: currentLanguageLabel })}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label={t('sidepanel.settings.interfaceLanguage')}>
+        <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label={t('sidepanel.settings.interfaceLanguage')}>
           {languageOptions.map((option) => {
             const active = localePreference === option.value;
             return (

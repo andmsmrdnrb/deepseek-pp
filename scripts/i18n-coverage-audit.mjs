@@ -50,6 +50,11 @@ const lineAllowlist = [
     reason: 'language selector uses the native name for Simplified Chinese',
   },
   {
+    path: 'core/i18n/resources/es.ts',
+    includes: 'zhCN: "简体中文"',
+    reason: 'language selector uses the native name for Simplified Chinese',
+  },
+  {
     path: 'core/inline-agent/prompt.ts',
     includes: '我(?:将|会|先|直接|现在|继续|尝试|开始|需要|还需要|仍需)',
     reason: 'regex detects Chinese pending-action text from model output',

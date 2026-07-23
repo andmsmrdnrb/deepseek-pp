@@ -59,6 +59,7 @@ export const en = {
     auto: 'Follow browser',
     zhCN: '简体中文',
     en: 'English',
+    es: 'Español',
   },
   sidepanel: {
     libraryPage: {
@@ -364,6 +365,7 @@ export const en = {
       languageAuto: 'Follow',
       languageChinese: 'Simplified Chinese',
       languageEnglish: 'English',
+      languageSpanish: 'Spanish',
       languageCurrent: 'Current: {language}',
       apiKeyRequired: 'Enter a DeepSeek API Key',
       saveFailed: 'Save failed',
@@ -515,6 +517,7 @@ export const en = {
       languageAuto: 'Auto',
       languageZh: 'Simplified Chinese',
       languageEn: 'English',
+      languageEs: 'Spanish',
       backendUnavailable: 'Prompt settings backend is unavailable. Reload the extension and try again.',
       loadFailed: 'Failed to load prompt settings: {error}',
       saveFailed: 'Failed to save prompt settings: {error}',
@@ -1284,6 +1287,7 @@ export const en = {
     standaloneMemories: '## Existing Memories\n{memories}',
     forceResponseLanguage: '## Response Language\nReply in {language}.',
     responseLanguageChinese: 'Simplified Chinese',
+    responseLanguageSpanish: 'Spanish',
     responseLanguageEnglish: 'English',
     skillUserInputWrapper: '{instructions}\n\n---\n\nThe following is the user input for this turn. Follow the instructions above when handling it:\n\n{userInput}',
     inlineAgent: {

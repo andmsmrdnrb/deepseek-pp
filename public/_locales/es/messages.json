@@ -1,0 +1,14 @@
+{
+  "extension_name": {
+    "message": "DeepSeek++",
+    "description": "Nombre de la extensión mostrado en la interfaz del navegador"
+  },
+  "extension_description": {
+    "message": "Memoria agéntica, Skills, ejecución, automatización y herramientas MCP para DeepSeek",
+    "description": "Descripción de la extensión mostrada en la interfaz del navegador"
+  },
+  "extension_action_title": {
+    "message": "DeepSeek++",
+    "description": "Título del botón de la barra de herramientas"
+  }
+}

@@ -117,6 +117,7 @@ export default function PromptControlPanel() {
             <option value="auto">{t('sidepanel.promptControls.languageAuto')}</option>
             <option value="zh-CN">{t('sidepanel.promptControls.languageZh')}</option>
             <option value="en">{t('sidepanel.promptControls.languageEn')}</option>
+            <option value="es">{t('sidepanel.promptControls.languageEs')}</option>
           </select>
         </label>
 
